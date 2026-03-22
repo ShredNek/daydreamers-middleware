@@ -26,8 +26,3 @@ export const enquiry = onRequest((request, response) => {
 	logger.info("Hello logs!", { structuredData: true });
 	response.send("Hello from Firebase!");
 });
-
-export const heathCheck = onRequest((request, response) => {
-	logger.info("OK");
-	response.send("OK");
-});
