@@ -9,7 +9,7 @@
 				"function": "api"
 			},
 			{
-				"source": "/health-check",
+				"source": "/",
 				"function": "healthCheck"
 			}
 		]
