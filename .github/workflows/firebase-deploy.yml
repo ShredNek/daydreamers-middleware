@@ -5,7 +5,8 @@ jobs:
   lint-check:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Linting code"
+      - uses: actions/checkout@v4
+      - run: bun i
       - run: bunx --bun @biomejs/biome lint ./functions/src ./modules
   # firebase-deploy-main:
   #   if: github.ref == 'refs/heads/main' # Only runs on the main branch
