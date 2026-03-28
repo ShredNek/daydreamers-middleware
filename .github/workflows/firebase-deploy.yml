@@ -28,5 +28,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: bun i --allow-scripts && cd ./functions && bun i --allow-scripts 
-      - run: bun run build
+      - run: cd ./functions && bun run build
       - run: bunx firebase deploy --only functions --project dd-middleware-test --token "${{ secrets.FIREBASE_TOKEN }}"
