@@ -10,7 +10,7 @@ if (!admin.apps.length) {
 
 const clientProjectIdInstance = process.env.CLIENT_PROJECT_ID;
 
-export const verifyAppCheck = async (token: string) => {
+const verifyAppCheck = async (token: string) => {
 	try {
 		const projectId = clientProjectIdInstance;
 
@@ -54,7 +54,7 @@ export const enquiry = onRequest(async (request, response) => {
 
 	try {
 		// Verify the App Check token using the Admin SDK
-		const appCheckClaims = await admin.appCheck().verifyToken(appCheckToken);
+		const appCheckClaims = await verifyAppCheck(appCheckToken);
 		logger.info("App Check token verified successfully.", { appCheckClaims });
 
 		// Your function's core logic here, now that App Check is verified
