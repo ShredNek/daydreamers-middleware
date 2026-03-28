@@ -25,5 +25,8 @@
 				"useSortedAttributes": "on"
 			}
 		}
+	},
+	"files": {
+		"includes": ["**", "!!**/node_modules", "!!**/lib", "!!**/.firebase"]
 	}
 }
