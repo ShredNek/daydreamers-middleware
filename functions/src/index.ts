@@ -3,7 +3,7 @@ import * as logger from "firebase-functions/logger";
 import { setGlobalOptions } from "firebase-functions/options";
 import { onRequest } from "firebase-functions/v2/https";
 import * as Http from "http-status-codes";
-import GLOBALS from "../../modules/globals";
+import GLOBALS from "./modules/globals";
 
 if (!admin.apps.length) {
 	admin.initializeApp();
