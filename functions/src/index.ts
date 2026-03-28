@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import { setGlobalOptions } from "firebase-functions/options";
+import { defineString } from "firebase-functions/params";
 import { onRequest } from "firebase-functions/v2/https";
 import * as Http from "http-status-codes";
 
@@ -8,19 +9,20 @@ if (!admin.apps.length) {
 	admin.initializeApp();
 }
 
-const firebaseClientAppId = process.env.FIREBASE_CLIENT_APP_ID;
-
-if (!firebaseClientAppId) {
-	throw new Error("FIREBASE_CLIENT_APP_ID not set");
-}
-
-const frontendApp = admin.initializeApp(
-	{ projectId: firebaseClientAppId },
-	"client",
-);
+const clientProjectIdInstance = defineString("CLIENT_PROJECT_ID");
 
 export const verifyAppCheck = async (token: string) => {
 	try {
+		const projectId = clientProjectIdInstance.value();
+
+		if (!projectId) {
+			throw new Error("CLIENT_PROJECT_ID not set");
+		}
+
+		const frontendApp =
+			admin.apps.find((app) => app?.name === "client") ||
+			admin.initializeApp({ projectId }, "client");
+
 		const appCheckClaims = await admin.appCheck(frontendApp).verifyToken(token);
 
 		return appCheckClaims;

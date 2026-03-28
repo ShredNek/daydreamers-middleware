@@ -13,14 +13,14 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun add @biomejs/biome
       - run: bunx --bun @biomejs/biome lint ./functions/src ./modules
-  # firebase-deploy-main:
+  # deploy-prod-backend:
   #   if: github.ref == 'refs/heads/main' # Only runs on the main branch
   #   runs-on: ubuntu-latest
   #   steps:
   #     - run: echo "Linting code"
   #     - run: bunx --bun @biomejs/biome lint ./functions/src ./modules
   
-  firebase-deploy-test:
+  deploy-test-backend:
     needs: lint-check
     if: github.ref == 'refs/heads/test'
     runs-on: ubuntu-latest
