@@ -7,7 +7,6 @@
 		"shell": "npm run build && firebase functions:shell",
 		"start": "npm run shell",
 		"deploy": "bunx firebase deploy --only functions --project dd-middleware-test",
-		"full-test": "bun i --allow-scripts && cd ./functions && bun i --allow-scripts && bun run build && bun run deploy",
 		"logs": "firebase functions:log"
 	},
 	"engines": {
