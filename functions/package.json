@@ -6,8 +6,7 @@
 		"serve": "npm run build && firebase emulators:start --only functions",
 		"shell": "npm run build && firebase functions:shell",
 		"start": "npm run shell",
-		"deploy": "bunx firebase deploy --only functions",
-		"deploy:test": "bunx firebase deploy --only functions --project dd-middleware-test",
+		"deploy": "bunx firebase deploy --only functions --project dd-middleware-test",
 		"logs": "firebase functions:log"
 	},
 	"engines": {
