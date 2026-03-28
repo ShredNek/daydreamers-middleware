@@ -27,5 +27,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: bun i --allow-scripts && cd ./functions && bun i --allow-scripts && bun run build
-      - run: bunx firebase deploy --only functions --project dd-middleware-test --token "${{ secrets.FIREBASE_TOKEN }}"
+      - name: Build and create env file
+        run: | 
+          bun i --allow-scripts
+          cd ./functions 
+          bun i --allow-scripts
+          echo "CLIENT_PROJECT_ID=${{ secrets.CLIENT_PROJECT_ID }}" > .env
+          bun run build
+      - name: Deploy to Firebase
+        run: bunx firebase deploy --only functions --project dd-middleware-test --token "${{ secrets.FIREBASE_TOKEN }}"

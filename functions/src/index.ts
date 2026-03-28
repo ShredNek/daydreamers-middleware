@@ -1,7 +1,6 @@
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import { setGlobalOptions } from "firebase-functions/options";
-import { defineString } from "firebase-functions/params";
 import { onRequest } from "firebase-functions/v2/https";
 import * as Http from "http-status-codes";
 
@@ -9,11 +8,11 @@ if (!admin.apps.length) {
 	admin.initializeApp();
 }
 
-const clientProjectIdInstance = defineString("CLIENT_PROJECT_ID");
+const clientProjectIdInstance = process.env.CLIENT_PROJECT_ID;
 
 export const verifyAppCheck = async (token: string) => {
 	try {
-		const projectId = clientProjectIdInstance.value();
+		const projectId = clientProjectIdInstance;
 
 		if (!projectId) {
 			throw new Error("CLIENT_PROJECT_ID not set");
