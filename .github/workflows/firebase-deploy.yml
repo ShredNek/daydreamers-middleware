@@ -1,6 +1,10 @@
 name: Firebase Deploy
 run-name: Deploy middleware to Firebase
-on: [push]
+on:
+  push:
+    branches:
+      - main
+      - test
 jobs:
   lint-check:
     runs-on: ubuntu-latest
@@ -23,7 +27,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: bun i
+      - run: bun i --production --allow-scripts
       - run: bun pm untrusted
-      - run: bunx firebase deploy --only functions --project dd-middleware-test
-      - run: echo "Deploy status :${{ job.status }}."
+      - run: bunx firebase deploy --only functions --project dd-middleware-test --token "${{ secrets.FIREBASE_TOKEN }}"

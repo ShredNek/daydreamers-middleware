@@ -33,5 +33,10 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.8",
     "@types/nodemailer": "^7.0.11"
-  }
+  },
+  "trustedDependencies": [
+    "@firebase/util",
+    "core-js",
+    "protobufjs"
+  ]
 }
