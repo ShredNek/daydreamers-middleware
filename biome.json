@@ -8,10 +8,6 @@
 	"files": {
 		"ignoreUnknown": false
 	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
 	"linter": {
 		"enabled": true,
 		"rules": {

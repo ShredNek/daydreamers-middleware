@@ -30,6 +30,6 @@
 		}
 	},
 	"files": {
-		"includes": ["**", "!!**/node_modules", "!!**/lib", "!!**/.firebase"]
+		"includes": ["**", "!!**/node_modules", "!!**/lib"]
 	}
 }
