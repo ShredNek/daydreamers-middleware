@@ -1,25 +1,30 @@
 import type { Request } from "firebase-functions/https";
+import { logger } from "firebase-functions/logger";
 import { StatusCodes } from "http-status-codes";
 import nodemailer from "nodemailer";
 import { ZodError } from "zod";
 import type { FirebaseCallbackResult } from "../firebase-helpers/appCheckedRequest";
 import { EnquiryReqBody } from "./schemas";
 
-const controller = {
+export const controller = {
 	postEnquiry: async (req: Request): Promise<FirebaseCallbackResult> => {
-		const returnedResponse: FirebaseCallbackResult = {
-			message: "Unhandled exception",
-			code: StatusCodes.INTERNAL_SERVER_ERROR,
-		};
-
 		try {
+			const { EMAIL_USER, EMAIL_PASS } = process.env;
+
+			if (!(EMAIL_PASS && EMAIL_USER)) {
+				throw new Error("EMAIL_PASS or EMAIL_USER is missing or falsy");
+			}
+
 			const transporter = nodemailer.createTransport({
 				service: "gmail",
 				auth: {
-					user: process.env.EMAIL_USER,
-					pass: process.env.EMAIL_PASS,
+					user: EMAIL_USER,
+					pass: EMAIL_PASS,
 				},
 			});
+
+			// ? Check that  the transporter is ready to go - this will throw an error if it fails
+			await transporter.verify();
 
 			const rawResponse = EnquiryReqBody.parse(req.body);
 
@@ -70,22 +75,34 @@ const controller = {
 				html,
 			};
 
-			transporter.sendMail(mailOptions, (error, info) => {
-				returnedResponse.message = error ? JSON.stringify(error) : `Email sent: ${info.response}`;
-				returnedResponse.code = error ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK;
-			});
+			const sendMailRes = await transporter.sendMail(mailOptions);
+
+			return {
+				message: `Email sent: ${sendMailRes.response}`,
+				code: StatusCodes.OK,
+			};
 		} catch (error) {
+			logger.error(error);
 			if (error instanceof ZodError) {
-				returnedResponse.message = `There were errors parsing the request: ${JSON.stringify(error.issues)}`;
-				returnedResponse.code = StatusCodes.BAD_REQUEST;
+				return {
+					message: `There were errors parsing the request: ${JSON.stringify(
+						error.issues
+							.map((i) => `${i.path.join(".")}: ${i.message}`)
+							.join(". "),
+					)}`,
+					code: StatusCodes.BAD_REQUEST,
+				};
+			} else if (error instanceof Error) {
+				return {
+					message: `Error (${error.name}): ${error.cause}. Details: ${error.message}`,
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				};
+			} else {
+				return {
+					message: `Unknown Error: ${JSON.stringify(error)}`,
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				};
 			}
-
-			returnedResponse.message = `Internal Server Error: ${JSON.stringify(error)}`;
-			returnedResponse.code = StatusCodes.INTERNAL_SERVER_ERROR;
 		}
-
-		return returnedResponse;
 	},
 };
-
-export default controller;

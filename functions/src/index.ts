@@ -2,7 +2,7 @@ import admin from "firebase-admin";
 import { setGlobalOptions } from "firebase-functions/options";
 import { StatusCodes } from "http-status-codes";
 import { appCheckedRequest } from "./firebase-helpers/appCheckedRequest";
-import controller from "./modules/controller";
+import { controller } from "./modules/controller";
 
 // ? Initialise app
 if (!admin.apps.length) {
