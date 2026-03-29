@@ -20,8 +20,9 @@
 		"http-status-codes": "^2.3.0"
 	},
 	"devDependencies": {
-		"typescript": "^6.0.2",
-		"firebase-functions-test": "^3.4.1"
+		"@biomejs/biome": "2.4.9",
+		"firebase-functions-test": "^3.4.1",
+		"typescript": "^6.0.2"
 	},
 	"private": true,
 	"trustedDependencies": [
