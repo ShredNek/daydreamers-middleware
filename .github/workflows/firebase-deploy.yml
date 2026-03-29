@@ -17,7 +17,7 @@ jobs:
           bun add @biomejs/biome
           bunx --bun @biomejs/biome lint ./src
   deploy-prod-backend:
-    if: github.ref == 'refs/heads/main' # Only runs on the main branch
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,12 @@ jobs:
           echo "CLIENT_PROJECT_ID=${{ secrets.CLIENT_PROJECT_ID }}" > .env
           bun run build
       - name: Deploy to Firebase
-        run: bunx firebase deploy --only functions --project dd-middleware --token "${{ secrets.FIREBASE_TOKEN }}"
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions
+          project_id: dd-middleware
+        env:
+          GCP_SA_KEY: ${{ secrets.PROD_SERVICE_ACCOUNT_JSON }}
   
   deploy-test-backend:
     needs: lint-check
@@ -47,4 +52,9 @@ jobs:
           echo "CLIENT_PROJECT_ID=${{ secrets.CLIENT_PROJECT_ID }}" > .env
           bun run build
       - name: Deploy to Firebase
-        run: bunx firebase deploy --only functions --project dd-middleware-test --token "${{ secrets.FIREBASE_TOKEN }}"
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions
+          project_id: dd-middleware-test
+        env:
+          GCP_SA_KEY: ${{ secrets.TEST_SERVICE_ACCOUNT_JSON }}
