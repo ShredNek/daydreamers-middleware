@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 export const EnquiryReqBody = z.object({
 	firstName: z.string(),

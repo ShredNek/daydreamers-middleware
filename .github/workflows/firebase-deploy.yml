@@ -11,8 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: bun add @biomejs/biome
-      - run: bunx --bun @biomejs/biome lint ./functions/src ./modules
+      - run: |
+          bun add @biomejs/biome
+          bunx --bun @biomejs/biome lint ./functions/src ./modules
   # deploy-prod-backend:
   #   if: github.ref == 'refs/heads/main' # Only runs on the main branch
   #   runs-on: ubuntu-latest
@@ -29,7 +30,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: Build and create env file
         run: | 
-          bun i --allow-scripts
           cd ./functions 
           bun i --allow-scripts
           echo "CLIENT_PROJECT_ID=${{ secrets.CLIENT_PROJECT_ID }}" > .env

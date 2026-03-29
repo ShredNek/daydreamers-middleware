@@ -1,7 +1,7 @@
-import * as admin from "firebase-admin";
+import admin from "firebase-admin";
 import { setGlobalOptions } from "firebase-functions/options";
+import { StatusCodes } from "http-status-codes";
 import { appCheckedRequest } from "./firebase-helpers/appCheckedRequest";
-import * as Http from "http-status-codes";
 
 // ? Initialise app
 if (!admin.apps.length) {
@@ -20,13 +20,24 @@ setGlobalOptions({ region: "australia-southeast1" });
 // ? MAIN ?
 // ? ? ? ?
 
-export const enquiry = appCheckedRequest({
+export const enquiryGet = appCheckedRequest({
 	firebaseAdminInstance: admin,
 	httpMethod: "GET",
 	callback: async () => {
 		return {
 			message: "Test successful - middleware checks passed",
-			code: Http.StatusCodes.ACCEPTED,
+			code: StatusCodes.ACCEPTED,
+		};
+	},
+});
+
+export const enquiryPost = appCheckedRequest({
+	firebaseAdminInstance: admin,
+	httpMethod: "GET",
+	callback: async () => {
+		return {
+			message: "Test successful - middleware checks passed",
+			code: StatusCodes.ACCEPTED,
 		};
 	},
 });

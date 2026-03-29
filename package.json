@@ -1,42 +1,25 @@
 {
 	"name": "daydreamers-middleware",
 	"version": "1.0.0",
-	"description": "",
+	"author": "",
 	"main": "index.js",
-	"scripts": {
-		"full-test": "bun i --allow-scripts && cd ./functions && bun i --allow-scripts && bun run build && bun run deploy"
+	"devDependencies": {
+		"@biomejs/biome": "2.4.9",
+		"@types/nodemailer": "^7.0.11"
 	},
+	"description": "",
 	"engines": {
 		"node": "20"
 	},
 	"keywords": [],
-	"author": "",
 	"license": "ISC",
-	"type": "module",
-	"dependencies": {
-		"@google-cloud/functions-framework": "^5.0.2",
-		"@shopify/shopify-api": "^8.1.1",
-		"@types/cors": "^2.8.19",
-		"biome": "^0.3.3",
-		"cors": "^2.8.5",
-		"dotenv": "^16.6.1",
-		"firebase": "^12.11.0",
-		"firebase-admin": "^13.7.0",
-		"firebase-functions": "^7.2.2",
-		"firebase-tools": "^13.35.1",
-		"hono": "^4.12.8",
-		"http-status-codes": "^2.3.0",
-		"node-fetch": "^3.3.2",
-		"nodemon": "^3.0.1",
-		"zod": "^4.3.6"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.4.9",
-		"@types/nodemailer": "^7.0.11"
+	"scripts": {
+		"full-test": "bun i --allow-scripts && cd ./functions && bun i --allow-scripts && bun run build && bun run deploy"
 	},
 	"trustedDependencies": [
 		"@firebase/util",
 		"core-js",
 		"protobufjs"
-	]
+	],
+	"type": "module"
 }

@@ -1,15 +1,17 @@
-import dotenv from "dotenv";
-import type { Context } from "hono";
+import type { Request } from "firebase-functions/https";
 import { StatusCodes } from "http-status-codes";
 import nodemailer from "nodemailer";
 import { ZodError } from "zod";
+import type { FirebaseCallbackResult } from "../firebase-helpers/appCheckedRequest";
 import { EnquiryReqBody } from "./schemas";
 
-dotenv.config();
-
-// const controller: (c: Context<any, unknown, {}>) => Promise<MiddlemanResponse> =
 const controller = {
-	postEnquiry: async (c: Context) => {
+	postEnquiry: async (req: Request): Promise<FirebaseCallbackResult> => {
+		const returnedResponse: FirebaseCallbackResult = {
+			message: "Unhandled exception",
+			code: StatusCodes.INTERNAL_SERVER_ERROR,
+		};
+
 		try {
 			const transporter = nodemailer.createTransport({
 				service: "gmail",
@@ -19,7 +21,7 @@ const controller = {
 				},
 			});
 
-			const rawResponse = EnquiryReqBody.parse(c.req.json());
+			const rawResponse = EnquiryReqBody.parse(req.body);
 
 			const {
 				firstName,
@@ -43,11 +45,7 @@ const controller = {
       Enquiry type: ${enquiryType},
       Favourite colour: ${favouriteColour},
       ${angerLevel ? `angerLevel: ${angerLevel},` : ""}
-      ${
-				suggestedPunishment
-					? `suggestedPunishment: ${suggestedPunishment},`
-					: ""
-			}
+      ${suggestedPunishment ? `suggestedPunishment: ${suggestedPunishment},` : ""}
       ${codeName ? `codeName: ${codeName},` : ""}
       ${levelOfSecrecy ? `levelOfSecrecy: ${levelOfSecrecy}` : ""}
               `;
@@ -59,20 +57,10 @@ const controller = {
         <p><strong>Mobile number:</strong> ${mobileNumber}</p>
         <p><strong>Message:</strong> ${message}</p>
         <p><strong>Favourite colour:</strong> ${favouriteColour}</p>
-        ${
-					angerLevel ? `<p><strong>Anger level:</strong> ${angerLevel}</p>` : ""
-				}
-        ${
-					suggestedPunishment
-						? `<p><strong>Suggested punishment:</strong> ${suggestedPunishment}</p>`
-						: ""
-				}
+        ${angerLevel ? `<p><strong>Anger level:</strong> ${angerLevel}</p>` : ""}
+        ${suggestedPunishment ? `<p><strong>Suggested punishment:</strong> ${suggestedPunishment}</p>` : ""}
         ${codeName ? `<p><strong>Code name:</strong> ${codeName}</p>` : ""}
-        ${
-					levelOfSecrecy
-						? `<p><strong>Level of secrecy:</strong> ${levelOfSecrecy}</p>`
-						: ""
-				}`;
+        ${levelOfSecrecy ? `<p><strong>Level of secrecy:</strong> ${levelOfSecrecy}</p>` : ""}`;
 
 			const mailOptions = {
 				from: email,
@@ -82,26 +70,21 @@ const controller = {
 				html,
 			};
 
-			return transporter.sendMail(mailOptions, (error, info) => {
-				if (error) {
-					c.status(StatusCodes.INTERNAL_SERVER_ERROR);
-					return c.text(JSON.stringify(error));
-				}
-
-				c.status(StatusCodes.OK);
-				return c.text(`Email sent: ${info.response}`);
+			transporter.sendMail(mailOptions, (error, info) => {
+				returnedResponse.message = error ? JSON.stringify(error) : `Email sent: ${info.response}`;
+				returnedResponse.code = error ? StatusCodes.INTERNAL_SERVER_ERROR : StatusCodes.OK;
 			});
 		} catch (error) {
 			if (error instanceof ZodError) {
-				c.status(StatusCodes.BAD_REQUEST);
-				return c.text(
-					`There were errors parsing the request: ${JSON.stringify(error.issues)}`,
-				);
+				returnedResponse.message = `There were errors parsing the request: ${JSON.stringify(error.issues)}`;
+				returnedResponse.code = StatusCodes.BAD_REQUEST;
 			}
 
-			c.status(StatusCodes.INTERNAL_SERVER_ERROR);
-			c.text(`Internal Server Error: ${JSON.stringify(error)}`);
+			returnedResponse.message = `Internal Server Error: ${JSON.stringify(error)}`;
+			returnedResponse.code = StatusCodes.INTERNAL_SERVER_ERROR;
 		}
+
+		return returnedResponse;
 	},
 };
 
