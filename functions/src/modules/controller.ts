@@ -78,7 +78,7 @@ export const controller = {
 			const sendMailRes = await transporter.sendMail(mailOptions);
 
 			return {
-				message: `Email sent: ${sendMailRes.response}`,
+				message: `Email sent OK. Message ID: ${sendMailRes.messageId}`,
 				code: StatusCodes.OK,
 			};
 		} catch (error) {
@@ -90,7 +90,7 @@ export const controller = {
 							.map((i) => `${i.path.join(".")}: ${i.message}`)
 							.join(". "),
 					)}`,
-					code: StatusCodes.BAD_REQUEST,
+					code: StatusCodes.UNPROCESSABLE_ENTITY,
 				};
 			} else if (error instanceof Error) {
 				return {
