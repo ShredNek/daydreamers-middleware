@@ -45,7 +45,7 @@ type AppCheckedRequest = {
 	httpMethod: SupportedMethods;
 };
 
-export const appCheckedRequest = async ({
+export const appCheckedRequest = ({
 	firebaseAdminInstance,
 	callback,
 	httpMethod,
@@ -92,6 +92,7 @@ export const appCheckedRequest = async ({
 				return;
 			}
 
+			// ? 4. Execute main logic here
 			try {
 				const res = await callback();
 				response.status(res.code).send(res.message);

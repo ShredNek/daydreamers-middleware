@@ -20,7 +20,7 @@ setGlobalOptions({ region: "australia-southeast1" });
 // ? MAIN ?
 // ? ? ? ?
 
-export const enquiry = await appCheckedRequest({
+export const enquiry = appCheckedRequest({
 	firebaseAdminInstance: admin,
 	httpMethod: "GET",
 	callback: async () => {

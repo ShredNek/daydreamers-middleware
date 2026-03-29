@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "commonjs",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "outDir": "lib",
-    "rootDir": "src",
     "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
-    "target": "ESNext",
+    "outDir": "lib",
+    "rootDir": "src",
+    "target": "esnext",
     "lib": [
-      "ESNext"
+      "esnext"
     ]
   },
   "compileOnSave": true,
