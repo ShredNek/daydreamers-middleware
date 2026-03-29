@@ -2,6 +2,7 @@ import admin from "firebase-admin";
 import { setGlobalOptions } from "firebase-functions/options";
 import { StatusCodes } from "http-status-codes";
 import { appCheckedRequest } from "./firebase-helpers/appCheckedRequest";
+import controller from "./modules/controller";
 
 // ? Initialise app
 if (!admin.apps.length) {
@@ -33,11 +34,6 @@ export const enquiryGet = appCheckedRequest({
 
 export const enquiryPost = appCheckedRequest({
 	firebaseAdminInstance: admin,
-	httpMethod: "GET",
-	callback: async () => {
-		return {
-			message: "Test successful - middleware checks passed",
-			code: StatusCodes.ACCEPTED,
-		};
-	},
+	httpMethod: "POST",
+	callback: async (req) => controller.postEnquiry(req),
 });
