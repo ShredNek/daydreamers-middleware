@@ -4,21 +4,13 @@
 		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
 		"rewrites": [
 			{
-				"source": "**",
-				"destination": "/index.html",
-				"function": "api"
-			},
-			{
 				"source": "/",
 				"function": "healthCheck"
 			},
 			{
-				"source": "/enquiry-test",
-				"function": "enquiryGet"
-			},
-			{
-				"source": "/enquiry",
-				"function": "enquiryPost"
+				"source": "**",
+				"destination": "/index.html",
+				"function": "api"
 			}
 		]
 	},
