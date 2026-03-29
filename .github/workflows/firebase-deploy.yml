@@ -12,8 +12,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: |
+          cd ./functions
           bun add @biomejs/biome
-          bunx --bun @biomejs/biome lint ./functions/src ./modules
+          bunx --bun @biomejs/biome lint ./src
   # deploy-prod-backend:
   #   if: github.ref == 'refs/heads/main' # Only runs on the main branch
   #   runs-on: ubuntu-latest
