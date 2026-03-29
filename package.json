@@ -1,26 +1,24 @@
 {
-  "name": "workirl",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "engines": {
-    "node": "20"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "dependencies": {
-    "@shopify/shopify-api": "^8.1.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "firebase": "^10.7.1",
-    "firebase-tools": "^13.11.2",
-    "node-fetch": "^3.3.2",
-    "nodemon": "^3.0.1"
-  }
+	"name": "daydreamers-middleware",
+	"version": "1.0.0",
+	"author": "",
+	"main": "index.js",
+	"description": "",
+	"engines": {
+		"node": "20"
+	},
+	"keywords": [],
+	"license": "ISC",
+	"scripts": {
+		"full-test": "bun i --allow-scripts && cd ./functions && bun i --allow-scripts && bun run build && bun run deploy"
+	},
+	"type": "module",
+	"dependencies": {
+		"firebase": "^12.11.0",
+		"firebase-admin": "^13.7.0",
+		"firebase-functions": "^7.2.2",
+		"firebase-tools": "^13.35.1",
+		"@biomejs/biome": "^2.4.9",
+		"biome": "^0.3.3"
+	}
 }

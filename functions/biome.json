@@ -1,0 +1,35 @@
+{
+	"root": false,
+	"formatter": {
+		"lineWidth": 120
+	},
+	"linter": {
+		"rules": {
+			"complexity": {
+				"useLiteralKeys": "off"
+			},
+			"a11y": {
+				"useButtonType": "error",
+				"useHtmlLang": "error",
+				"useKeyWithClickEvents": "error",
+				"useKeyWithMouseEvents": "error",
+				"useValidAnchor": "error",
+				"useValidAutocomplete": "error",
+				"useValidLang": "error"
+			},
+			"style": {
+				"noMagicNumbers": "error"
+			}
+		}
+	},
+	"assist": {
+		"actions": {
+			"source": {
+				"useSortedAttributes": "on"
+			}
+		}
+	},
+	"files": {
+		"includes": ["**", "!!**/node_modules", "!!**/lib"]
+	}
+}

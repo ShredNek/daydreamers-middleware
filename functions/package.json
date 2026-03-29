@@ -1,32 +1,36 @@
 {
-  "name": "functions",
-  "description": "Cloud Functions for Firebase",
-  "scripts": {
-    "lint": "",
-    "serve": "firebase emulators:start --only functions",
-    "shell": "firebase functions:shell",
-    "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
-  },
-  "engines": {
-    "node": "20"
-  },
-  "main": "index.js",
-  "type": "module",
-  "dependencies": {
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "firebase-admin": "^11.0.0",
-    "firebase-functions": "^5.0.1",
-    "nodemailer": "^6.9.13"
-  },
-  "devDependencies": {
-    "eslint": "^8.15.0",
-    "eslint-config-google": "^0.14.0",
-    "firebase-functions-test": "^3.1.0"
-  },
-  "private": true
+	"name": "functions",
+	"scripts": {
+		"build": "bun x tsc",
+		"build:watch": "bun x tsc --watch",
+		"serve": "npm run build && firebase emulators:start --only functions",
+		"shell": "npm run build && firebase functions:shell",
+		"start": "npm run shell",
+		"deploy": "bunx firebase deploy --only functions --project dd-middleware-test",
+		"logs": "firebase functions:log"
+	},
+	"engines": {
+		"node": "22"
+	},
+	"main": "lib/index.js",
+	"dependencies": {
+		"@google-cloud/functions-framework": "^5.0.2",
+		"@types/nodemailer": "^7.0.11",
+		"firebase-admin": "^13.7.0",
+		"firebase-functions": "^7.2.2",
+		"http-status-codes": "^2.3.0",
+		"install": "^0.13.0",
+		"nodemailer": "^8.0.4",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.9",
+		"firebase-functions-test": "^3.4.1",
+		"typescript": "^6.0.2"
+	},
+	"private": true,
+	"trustedDependencies": [
+		"protobufjs",
+		"unrs-resolver"
+	]
 }
