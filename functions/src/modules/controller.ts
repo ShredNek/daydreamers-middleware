@@ -61,7 +61,7 @@ export const controller = {
       <p><strong>Enquiry type:</strong> ${enquiryType}</p>
         <p><strong>Mobile number:</strong> ${mobileNumber}</p>
         <p><strong>Message:</strong> ${message}</p>
-        <p><strong>Favourite colour:</strong> ${favouriteColour}</p>
+        ${favouriteColour ? `<p><strong>Favourite colour:</strong> ${favouriteColour}</p>` : ""}
         ${angerLevel ? `<p><strong>Anger level:</strong> ${angerLevel}</p>` : ""}
         ${suggestedPunishment ? `<p><strong>Suggested punishment:</strong> ${suggestedPunishment}</p>` : ""}
         ${codeName ? `<p><strong>Code name:</strong> ${codeName}</p>` : ""}
@@ -94,7 +94,7 @@ export const controller = {
 				};
 			} else if (error instanceof Error) {
 				return {
-					message: `Error (${error.name}): ${error.cause}. Details: ${error.message}`,
+					message: `Error (${error.name}): ${error.message}`,
 					code: StatusCodes.INTERNAL_SERVER_ERROR,
 				};
 			} else {
