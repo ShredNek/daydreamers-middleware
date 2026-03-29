@@ -11,16 +11,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
-      - run: |
+      - name: Biome Lint Check
+        run: |
           cd ./functions
           bun add @biomejs/biome
           bunx --bun @biomejs/biome lint ./src
-  # deploy-prod-backend:
-  #   if: github.ref == 'refs/heads/main' # Only runs on the main branch
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: echo "Linting code"
-  #     - run: bunx --bun @biomejs/biome lint ./functions/src ./modules
+  deploy-prod-backend:
+    if: github.ref == 'refs/heads/main' # Only runs on the main branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Build and create env file
+        run: | 
+          bun i --allow-scripts
+          cd ./functions 
+          bun i --allow-scripts
+          echo "CLIENT_PROJECT_ID=${{ secrets.CLIENT_PROJECT_ID }}" > .env
+          bun run build
+      - name: Deploy to Firebase
+        run: bunx firebase deploy --only functions --project dd-middleware --token "${{ secrets.FIREBASE_TOKEN }}"
   
   deploy-test-backend:
     needs: lint-check
