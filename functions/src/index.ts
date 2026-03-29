@@ -21,17 +21,6 @@ setGlobalOptions({ region: "australia-southeast1" });
 // ? MAIN ?
 // ? ? ? ?
 
-export const enquiryTest = appCheckedRequest({
-	firebaseAdminInstance: admin,
-	httpMethod: "GET",
-	callback: async () => {
-		return {
-			message: "Test successful - middleware checks passed",
-			code: StatusCodes.ACCEPTED,
-		};
-	},
-});
-
 export const enquiry = appCheckedRequest({
 	firebaseAdminInstance: admin,
 	httpMethod: "POST",
