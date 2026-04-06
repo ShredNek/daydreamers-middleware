@@ -34,7 +34,7 @@ jobs:
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only functions -P dd-middleware
+          args: deploy --only functions -P ddmerch-middlewear
         env:
           GCP_SA_KEY: ${{ secrets.PROD_SERVICE_ACCOUNT_JSON }}
           PROJECT_ID: dd-middleware
