@@ -24,6 +24,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: Create .env file
         run: |
+          cd ./functions 
           echo "${{ secrets.ENV_FILE }}" > .env
       - name: Build
         run: | 
@@ -48,6 +49,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: Create .env file
         run: |
+          cd ./functions 
           echo "${{ secrets.ENV_FILE }}" > .env
       - name: Build
         run: | 
