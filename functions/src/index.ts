@@ -22,3 +22,9 @@ export const enquiry = appCheckedRequest({
 	httpMethod: "POST",
 	callback: async (req) => controller.postEnquiry(req),
 });
+
+export const addMailingListUser = appCheckedRequest({
+	firebaseAdminInstance: admin,
+	httpMethod: "PATCH",
+	callback: async (req) => controller.patchMailingListUser(req),
+});

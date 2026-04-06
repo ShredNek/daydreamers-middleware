@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import nodemailer from "nodemailer";
 import { ZodError } from "zod";
 import type { FirebaseCallbackResult } from "../firebase-helpers/appCheckedRequest";
-import { EnquiryReqBody } from "./schemas";
+import { EnquiryReqBody, PatchMailingListUserBody } from "./schemas";
 
 export const controller = {
 	postEnquiry: async (req: Request): Promise<FirebaseCallbackResult> => {
@@ -86,9 +86,55 @@ export const controller = {
 			if (error instanceof ZodError) {
 				return {
 					message: `There were errors parsing the request: ${JSON.stringify(
-						error.issues
-							.map((i) => `${i.path.join(".")}: ${i.message}`)
-							.join(". "),
+						error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join(". "),
+					)}`,
+					code: StatusCodes.UNPROCESSABLE_ENTITY,
+				};
+			} else if (error instanceof Error) {
+				return {
+					message: `Error (${error.name}): ${error.message}`,
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				};
+			} else {
+				return {
+					message: `Unknown Error: ${JSON.stringify(error)}`,
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				};
+			}
+		}
+	},
+
+	patchMailingListUser: async (req: Request): Promise<FirebaseCallbackResult> => {
+		try {
+			const { DATABASE_URL } = process.env;
+
+			if (!DATABASE_URL) {
+				throw new Error("DATABASE_URL is missing or falsy");
+			}
+
+			const { email, fullName } = PatchMailingListUserBody.parse(req.body);
+
+			const patchResultRaw = await fetch(`${DATABASE_URL}/mailing_list_users.json`, {
+				method: "PATCH",
+				body: JSON.stringify({
+					[email]: {
+						full_name: fullName,
+					},
+				}),
+			});
+
+			const patchResultParsed = await patchResultRaw.json();
+
+			return {
+				message: `User is now on mailing list - function returned OK: ${JSON.stringify(patchResultParsed)}`,
+				code: StatusCodes.OK,
+			};
+		} catch (error) {
+			logger.error(error);
+			if (error instanceof ZodError) {
+				return {
+					message: `There were errors parsing the request: ${JSON.stringify(
+						error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join(". "),
 					)}`,
 					code: StatusCodes.UNPROCESSABLE_ENTITY,
 				};

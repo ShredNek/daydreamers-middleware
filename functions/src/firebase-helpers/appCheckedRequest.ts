@@ -7,7 +7,7 @@ import GLOBALS from "../modules/globals";
 
 const clientProjectIdInstance = process.env.CLIENT_PROJECT_ID;
 
-type SupportedMethods = "GET" | "POST" | "DELETE";
+type SupportedMethods = "GET" | "POST" | "DELETE" | "PATCH";
 
 const verifyAppCheck = async (token: string, firebaseAdminInstance: AdminApp) => {
 	try {
@@ -43,7 +43,7 @@ type AppCheckedRequest = {
 
 export const appCheckedRequest = ({ firebaseAdminInstance, callback, httpMethod }: AppCheckedRequest) =>
 	onRequest(
-		// ? Allows endpoint to be hit by everyone, and disables
+		// ? Allows endpoint to be hit by everyone
 		{ invoker: "public", cors: GLOBALS.ALLOWED_DOMAINS },
 		async (request, response) => {
 			// ? App check logic

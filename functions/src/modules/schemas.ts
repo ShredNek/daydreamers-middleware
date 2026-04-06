@@ -1,6 +1,9 @@
 import { z } from "zod";
 
-// 1. Define the options in a constant array (Zod needs the runtime values)
+// ? This is in case someone provides a single letter for a name
+// ? I might make this more strict in future but idc we just need to send some emails
+const MINIMUM_FULLNAME_LENGTH = 1;
+
 const ENQUIRY_TYPES = [
 	"General",
 	"Booking",
@@ -23,4 +26,9 @@ export const EnquiryReqBody = z.object({
 	suggestedPunishment: z.string().nullable(),
 	codeName: z.string().nullable(),
 	levelOfSecrecy: z.number().nullable(),
+});
+
+export const PatchMailingListUserBody = z.object({
+	email: z.email(),
+	fullName: z.string().min(MINIMUM_FULLNAME_LENGTH),
 });
