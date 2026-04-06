@@ -22,12 +22,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Build and create env file
         run: | 
           bun i --allow-scripts
           cd ./functions 
           bun i --allow-scripts
-          echo "CLIENT_PROJECT_ID=${{ secrets.CLIENT_PROJECT_ID }}" > .env
           bun run build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
@@ -44,12 +46,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
       - name: Build and create env file
         run: | 
           bun i --allow-scripts
           cd ./functions 
           bun i --allow-scripts
-          echo "CLIENT_PROJECT_ID=${{ secrets.CLIENT_PROJECT_ID }}" > .env
           bun run build
       - name: Install Firebase CLI
         run: bun add -g firebase-tools
