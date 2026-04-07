@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import type { Request } from "firebase-functions/https";
 import { logger } from "firebase-functions/logger";
 import { StatusCodes } from "http-status-codes";
@@ -114,16 +115,21 @@ export const controller = {
 
 			const { email, fullName } = PatchMailingListUserBody.parse(req.body);
 
+			logger.info({ [email]: { fullName } });
+
 			const patchResultRaw = await fetch(`${DATABASE_URL}/mailing_list_users.json`, {
 				method: "PATCH",
-				body: JSON.stringify({
-					[email]: {
-						full_name: fullName,
-					},
-				}),
+				body: JSON.stringify({ [crypto.randomUUID()]: { fullName, email } }),
 			});
 
-			const patchResultParsed = await patchResultRaw.json();
+			const patchResultParsed = JSON.stringify(await patchResultRaw.json()).toLowerCase();
+
+			if (patchResultParsed.includes("invalid data")) {
+				return {
+					message: `Could not add user: ${patchResultParsed}`,
+					code: StatusCodes.BAD_REQUEST,
+				};
+			}
 
 			return {
 				message: `User is now on mailing list - function returned OK: ${JSON.stringify(patchResultParsed)}`,

@@ -1,18 +1,7 @@
 {
 	"hosting": {
 		"public": "public",
-		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-		"rewrites": [
-			{
-				"source": "/",
-				"function": "healthCheck"
-			},
-			{
-				"source": "**",
-				"destination": "/index.html",
-				"function": "api"
-			}
-		]
+		"ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
 	},
 	"functions": [
 		{
