@@ -27,9 +27,9 @@ jobs:
           echo "${{ secrets.ENV_FILE }}" > .env
       - name: Build and create env file
         run: | 
-          bun i --allow-scripts
+          bun i
           cd ./functions 
-          bun i --allow-scripts
+          bun i
           bun run build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
@@ -51,9 +51,9 @@ jobs:
           echo "${{ secrets.ENV_FILE }}" > .env
       - name: Build and create env file
         run: | 
-          bun i --allow-scripts
+          bun i
           cd ./functions 
-          bun i --allow-scripts
+          bun i
           bun run build
       - name: Install Firebase CLI
         run: bun add -g firebase-tools

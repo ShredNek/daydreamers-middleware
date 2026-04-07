@@ -20,11 +20,11 @@ setGlobalOptions({ region: "australia-southeast1" });
 export const enquiry = appCheckedRequest({
 	firebaseAdminInstance: admin,
 	httpMethod: "POST",
-	callback: async (req) => controller.postEnquiry(req),
+	callback: async ({ req }) => controller.postEnquiry({ admin, req }),
 });
 
 export const addMailingListUser = appCheckedRequest({
 	firebaseAdminInstance: admin,
 	httpMethod: "PATCH",
-	callback: async (req) => controller.patchMailingListUser(req),
+	callback: async ({ req }) => controller.patchMailingListUser({ admin, req }),
 });

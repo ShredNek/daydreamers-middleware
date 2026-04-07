@@ -10,15 +10,17 @@
 	"keywords": [],
 	"license": "ISC",
 	"scripts": {
-		"full-test": "bun i --allow-scripts && cd ./functions && bun i --allow-scripts && bun run build && bun run deploy"
+		"full-test": "bun i && cd ./functions && bun i && bun run build && bun run deploy"
 	},
 	"type": "module",
 	"dependencies": {
+		"@biomejs/biome": "^2.4.10",
+		"@types/methods": "^1.1.4",
+		"biome": "^0.3.3",
 		"firebase": "^12.11.0",
 		"firebase-admin": "^13.7.0",
 		"firebase-functions": "^7.2.3",
 		"firebase-tools": "^13.35.1",
-		"@biomejs/biome": "^2.4.10",
-		"biome": "^0.3.3"
+		"methods": "^1.1.2"
 	}
 }

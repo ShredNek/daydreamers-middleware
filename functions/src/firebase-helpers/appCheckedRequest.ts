@@ -2,12 +2,11 @@ import type { Request } from "firebase-functions/https";
 import { onRequest } from "firebase-functions/https";
 import { logger } from "firebase-functions/logger";
 import { StatusCodes } from "http-status-codes";
+import type Methods from "methods";
 import type { AdminApp } from "../index";
 import GLOBALS from "../modules/globals";
 
 const clientProjectIdInstance = process.env.CLIENT_PROJECT_ID;
-
-type SupportedMethods = "GET" | "POST" | "DELETE" | "PATCH";
 
 const verifyAppCheck = async (token: string, firebaseAdminInstance: AdminApp) => {
 	try {
@@ -37,8 +36,8 @@ export type FirebaseCallbackResult = {
 
 type AppCheckedRequest = {
 	firebaseAdminInstance: AdminApp;
-	callback: (request: Request) => Promise<FirebaseCallbackResult>;
-	httpMethod: SupportedMethods;
+	callback: ({ req }: { req: Request }) => Promise<FirebaseCallbackResult>;
+	httpMethod: (typeof Methods)[number];
 };
 
 export const appCheckedRequest = ({ firebaseAdminInstance, callback, httpMethod }: AppCheckedRequest) =>
@@ -79,7 +78,7 @@ export const appCheckedRequest = ({ firebaseAdminInstance, callback, httpMethod 
 
 			// ? 4. Execute main logic here
 			try {
-				const res = await callback(request);
+				const res = await callback({ req: request });
 				response.status(res.code).send(res.message);
 			} catch (error) {
 				response

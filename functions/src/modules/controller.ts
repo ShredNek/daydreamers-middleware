@@ -5,10 +5,16 @@ import { StatusCodes } from "http-status-codes";
 import nodemailer from "nodemailer";
 import { ZodError } from "zod";
 import type { FirebaseCallbackResult } from "../firebase-helpers/appCheckedRequest";
+import type { AdminApp } from "../index";
 import { EnquiryReqBody, PatchMailingListUserBody } from "./schemas";
 
+type ControllerParams = {
+	req: Request;
+	admin: AdminApp;
+};
+
 export const controller = {
-	postEnquiry: async (req: Request): Promise<FirebaseCallbackResult> => {
+	postEnquiry: async ({ req }: ControllerParams): Promise<FirebaseCallbackResult> => {
 		try {
 			const { EMAIL_USER, EMAIL_PASS } = process.env;
 
@@ -105,36 +111,54 @@ export const controller = {
 		}
 	},
 
-	patchMailingListUser: async (req: Request): Promise<FirebaseCallbackResult> => {
+	patchMailingListUser: async ({ req, admin }: ControllerParams): Promise<FirebaseCallbackResult> => {
 		try {
-			const { DATABASE_URL } = process.env;
-
-			if (!DATABASE_URL) {
-				throw new Error("DATABASE_URL is missing or falsy");
-			}
-
 			const { email, fullName } = PatchMailingListUserBody.parse(req.body);
 
-			logger.info({ [email]: { fullName } });
+			const db = admin.database();
 
-			const patchResultRaw = await fetch(`${DATABASE_URL}/mailing_list_users.json`, {
-				method: "PATCH",
-				body: JSON.stringify({ [crypto.randomUUID()]: { fullName, email } }),
-			});
+			logger.info("Connected to database:", admin.app().options.databaseURL);
 
-			const patchResultParsed = JSON.stringify(await patchResultRaw.json()).toLowerCase();
+			const checkExistingEmailSnapshot = await db.ref("mailing_list_users").orderByChild("email").equalTo(email).get();
 
-			if (patchResultParsed.includes("invalid data")) {
+			if (checkExistingEmailSnapshot.exists()) {
+				logger.info("User is already on mailing list");
+
 				return {
-					message: `Could not add user: ${patchResultParsed}`,
-					code: StatusCodes.BAD_REQUEST,
+					message: "User is already on mailing list",
+					code: StatusCodes.OK,
 				};
 			}
 
-			return {
-				message: `User is now on mailing list - function returned OK: ${JSON.stringify(patchResultParsed)}`,
-				code: StatusCodes.OK,
-			};
+			let res: null | FirebaseCallbackResult = null;
+
+			db.ref(`mailing_list_users/${crypto.randomUUID()}`)
+				.set({
+					email,
+					fullName,
+				})
+				.then(() => {
+					logger.info("Database set action OK");
+
+					res = {
+						message: "User is now on mailing list - function returned OK",
+						code: StatusCodes.CREATED,
+					};
+				})
+				.catch((e) => {
+					logger.error("Database set action NOT OK", e);
+
+					res = {
+						message: `Could not add user: ${JSON.stringify(JSON.stringify(e))}`,
+						code: StatusCodes.BAD_REQUEST,
+					};
+				});
+
+			if (res === null) {
+				throw new Error("COULD NOT OBTAIN RESPONSE BACK FROM DB CALL");
+			}
+
+			return res;
 		} catch (error) {
 			logger.error(error);
 			if (error instanceof ZodError) {
