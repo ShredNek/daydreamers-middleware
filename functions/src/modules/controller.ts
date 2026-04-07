@@ -122,43 +122,26 @@ export const controller = {
 			const checkExistingEmailSnapshot = await db.ref("mailing_list_users").orderByChild("email").equalTo(email).get();
 
 			if (checkExistingEmailSnapshot.exists()) {
-				logger.info("User is already on mailing list");
-
 				return {
 					message: "User is already on mailing list",
 					code: StatusCodes.OK,
 				};
 			}
 
-			let res: null | FirebaseCallbackResult = null;
-
-			db.ref(`mailing_list_users/${crypto.randomUUID()}`)
+			return db
+				.ref(`mailing_list_users/${crypto.randomUUID()}`)
 				.set({
 					email,
 					fullName,
 				})
-				.then(() => {
-					logger.info("Database set action OK");
-
-					res = {
-						message: "User is now on mailing list - function returned OK",
-						code: StatusCodes.CREATED,
-					};
-				})
-				.catch((e) => {
-					logger.error("Database set action NOT OK", e);
-
-					res = {
-						message: `Could not add user: ${JSON.stringify(JSON.stringify(e))}`,
-						code: StatusCodes.BAD_REQUEST,
-					};
-				});
-
-			if (res === null) {
-				throw new Error("COULD NOT OBTAIN RESPONSE BACK FROM DB CALL");
-			}
-
-			return res;
+				.then(() => ({
+					message: "User is now on mailing list - function returned OK",
+					code: StatusCodes.CREATED,
+				}))
+				.catch((e) => ({
+					message: `Could not add user: ${JSON.stringify(JSON.stringify(e))}`,
+					code: StatusCodes.BAD_REQUEST,
+				}));
 		} catch (error) {
 			logger.error(error);
 			if (error instanceof ZodError) {
