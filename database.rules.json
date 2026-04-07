@@ -1,0 +1,7 @@
+{
+	"rules": {
+		"mailing_list_users": {
+			".indexOn": ["email"]
+		}
+	}
+}
