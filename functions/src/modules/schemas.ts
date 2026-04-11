@@ -32,3 +32,7 @@ export const PatchMailingListUserBody = z.object({
 	email: z.email(),
 	fullName: z.string().min(MINIMUM_FULLNAME_LENGTH),
 });
+
+export const RemoveMailingListUserBody = z.object({
+	email: z.email(),
+});

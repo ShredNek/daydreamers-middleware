@@ -6,7 +6,7 @@ import nodemailer from "nodemailer";
 import { ZodError } from "zod";
 import type { FirebaseCallbackResult } from "../firebase-helpers/appCheckedRequest";
 import type { AdminApp } from "../index";
-import { EnquiryReqBody, PatchMailingListUserBody } from "./schemas";
+import { EnquiryReqBody, PatchMailingListUserBody, RemoveMailingListUserBody } from "./schemas";
 
 type ControllerParams = {
 	req: Request;
@@ -114,11 +114,7 @@ export const controller = {
 	patchMailingListUser: async ({ req, admin }: ControllerParams): Promise<FirebaseCallbackResult> => {
 		try {
 			const { email, fullName } = PatchMailingListUserBody.parse(req.body);
-
 			const db = admin.database();
-
-			logger.info("Connected to database:", admin.app().options.databaseURL);
-
 			const checkExistingEmailSnapshot = await db.ref("mailing_list_users").orderByChild("email").equalTo(email).get();
 
 			if (checkExistingEmailSnapshot.exists()) {
@@ -142,6 +138,54 @@ export const controller = {
 					message: `Could not add user: ${JSON.stringify(JSON.stringify(e))}`,
 					code: StatusCodes.BAD_REQUEST,
 				}));
+		} catch (error) {
+			logger.error(error);
+			if (error instanceof ZodError) {
+				return {
+					message: `There were errors parsing the request: ${JSON.stringify(
+						error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join(". "),
+					)}`,
+					code: StatusCodes.UNPROCESSABLE_ENTITY,
+				};
+			} else if (error instanceof Error) {
+				return {
+					message: `Error (${error.name}): ${error.message}`,
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				};
+			} else {
+				return {
+					message: `Unknown Error: ${JSON.stringify(error)}`,
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				};
+			}
+		}
+	},
+
+	deleteMailingListUser: async ({ req, admin }: ControllerParams): Promise<FirebaseCallbackResult> => {
+		try {
+			const { email } = RemoveMailingListUserBody.parse(req.body);
+			const db = admin.database();
+			const existingEmailsSnapshot = await db.ref("mailing_list_users").orderByChild("email").equalTo(email).get();
+
+			if (!existingEmailsSnapshot.exists()) {
+				return {
+					message: "Email does not exist in mailing list",
+					code: StatusCodes.OK,
+				};
+			}
+
+			const updates: Record<string, null> = {};
+			existingEmailsSnapshot.forEach((childSnapshot) => {
+				// Create a map of paths to null (which deletes them in Firebase)
+				updates[`mailing_list_users/${childSnapshot.key}`] = null;
+			});
+
+			await db.ref().update(updates);
+
+			return {
+				message: "User removed from mailing list",
+				code: StatusCodes.OK,
+			};
 		} catch (error) {
 			logger.error(error);
 			if (error instanceof ZodError) {
