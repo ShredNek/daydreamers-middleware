@@ -161,7 +161,7 @@ export const controller = {
 		}
 	},
 
-	deleteMailingListUser: async ({ req, admin }: ControllerParams): Promise<FirebaseCallbackResult> => {
+	deleteMailingListEmail: async ({ req, admin }: ControllerParams): Promise<FirebaseCallbackResult> => {
 		try {
 			const { email } = RemoveMailingListUserBody.parse(req.body);
 			const db = admin.database();

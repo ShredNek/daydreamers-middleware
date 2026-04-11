@@ -36,7 +36,7 @@ export type FirebaseCallbackResult = {
 
 type AppCheckedRequest = {
 	firebaseAdminInstance: AdminApp;
-	callback: ({ req }: { req: Request }) => Promise<FirebaseCallbackResult>;
+	callback: ({ req, admin }: { req: Request; admin: AdminApp }) => Promise<FirebaseCallbackResult>;
 	httpMethod: (typeof Methods)[number];
 };
 
@@ -78,7 +78,7 @@ export const appCheckedRequest = ({ firebaseAdminInstance, callback, httpMethod 
 
 			// ? 4. Execute main logic here
 			try {
-				const res = await callback({ req: request });
+				const res = await callback({ req: request, admin: firebaseAdminInstance });
 				response.status(res.code).send(res.message);
 			} catch (error) {
 				response
