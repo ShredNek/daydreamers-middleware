@@ -1,13 +1,20 @@
+import crypto from "node:crypto";
 import type { Request } from "firebase-functions/https";
 import { logger } from "firebase-functions/logger";
 import { StatusCodes } from "http-status-codes";
 import nodemailer from "nodemailer";
 import { ZodError } from "zod";
 import type { FirebaseCallbackResult } from "../firebase-helpers/appCheckedRequest";
-import { EnquiryReqBody } from "./schemas";
+import type { AdminApp } from "../index";
+import { EnquiryReqBody, PatchMailingListUserBody, RemoveMailingListUserBody } from "./schemas";
+
+type ControllerParams = {
+	req: Request;
+	admin: AdminApp;
+};
 
 export const controller = {
-	postEnquiry: async (req: Request): Promise<FirebaseCallbackResult> => {
+	postEnquiry: async ({ req }: ControllerParams): Promise<FirebaseCallbackResult> => {
 		try {
 			const { EMAIL_USER, EMAIL_PASS } = process.env;
 
@@ -86,9 +93,105 @@ export const controller = {
 			if (error instanceof ZodError) {
 				return {
 					message: `There were errors parsing the request: ${JSON.stringify(
-						error.issues
-							.map((i) => `${i.path.join(".")}: ${i.message}`)
-							.join(". "),
+						error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join(". "),
+					)}`,
+					code: StatusCodes.UNPROCESSABLE_ENTITY,
+				};
+			} else if (error instanceof Error) {
+				return {
+					message: `Error (${error.name}): ${error.message}`,
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				};
+			} else {
+				return {
+					message: `Unknown Error: ${JSON.stringify(error)}`,
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				};
+			}
+		}
+	},
+
+	patchMailingListUser: async ({ req, admin }: ControllerParams): Promise<FirebaseCallbackResult> => {
+		try {
+			const { email, fullName } = PatchMailingListUserBody.parse(req.body);
+			const db = admin.database();
+			const checkExistingEmailSnapshot = await db.ref("mailing_list_users").orderByChild("email").equalTo(email).get();
+
+			if (checkExistingEmailSnapshot.exists()) {
+				return {
+					message: "User is already on mailing list",
+					code: StatusCodes.OK,
+				};
+			}
+
+			return db
+				.ref(`mailing_list_users/${crypto.randomUUID()}`)
+				.set({
+					email,
+					fullName,
+				})
+				.then(() => ({
+					message: "User is now on mailing list - function returned OK",
+					code: StatusCodes.CREATED,
+				}))
+				.catch((e) => ({
+					message: `Could not add user: ${JSON.stringify(JSON.stringify(e))}`,
+					code: StatusCodes.BAD_REQUEST,
+				}));
+		} catch (error) {
+			logger.error(error);
+			if (error instanceof ZodError) {
+				return {
+					message: `There were errors parsing the request: ${JSON.stringify(
+						error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join(". "),
+					)}`,
+					code: StatusCodes.UNPROCESSABLE_ENTITY,
+				};
+			} else if (error instanceof Error) {
+				return {
+					message: `Error (${error.name}): ${error.message}`,
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				};
+			} else {
+				return {
+					message: `Unknown Error: ${JSON.stringify(error)}`,
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				};
+			}
+		}
+	},
+
+	deleteMailingListEmail: async ({ req, admin }: ControllerParams): Promise<FirebaseCallbackResult> => {
+		try {
+			const { email } = RemoveMailingListUserBody.parse(req.body);
+			const db = admin.database();
+			const existingEmailsSnapshot = await db.ref("mailing_list_users").orderByChild("email").equalTo(email).get();
+
+			if (!existingEmailsSnapshot.exists()) {
+				return {
+					message: "Email does not exist in mailing list",
+					code: StatusCodes.OK,
+				};
+			}
+
+			const updates: Record<string, null> = {};
+			existingEmailsSnapshot.forEach((childSnapshot) => {
+				// Create a map of paths to null (which deletes them in Firebase)
+				updates[`mailing_list_users/${childSnapshot.key}`] = null;
+			});
+
+			await db.ref().update(updates);
+
+			return {
+				message: "User removed from mailing list",
+				code: StatusCodes.OK,
+			};
+		} catch (error) {
+			logger.error(error);
+			if (error instanceof ZodError) {
+				return {
+					message: `There were errors parsing the request: ${JSON.stringify(
+						error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join(". "),
 					)}`,
 					code: StatusCodes.UNPROCESSABLE_ENTITY,
 				};

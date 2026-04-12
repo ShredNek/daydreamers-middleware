@@ -2,16 +2,13 @@ import type { Request } from "firebase-functions/https";
 import { onRequest } from "firebase-functions/https";
 import { logger } from "firebase-functions/logger";
 import { StatusCodes } from "http-status-codes";
+import type Methods from "methods";
 import type { AdminApp } from "../index";
 import GLOBALS from "../modules/globals";
 
-const clientProjectIdInstance = process.env.CLIENT_PROJECT_ID;
-
-type SupportedMethods = "GET" | "POST" | "DELETE";
-
 const verifyAppCheck = async (token: string, firebaseAdminInstance: AdminApp) => {
 	try {
-		const projectId = clientProjectIdInstance;
+		const projectId = process.env.CLIENT_PROJECT_ID;
 
 		if (!projectId) {
 			throw new Error("CLIENT_PROJECT_ID not set");
@@ -37,13 +34,13 @@ export type FirebaseCallbackResult = {
 
 type AppCheckedRequest = {
 	firebaseAdminInstance: AdminApp;
-	callback: (request: Request) => Promise<FirebaseCallbackResult>;
-	httpMethod: SupportedMethods;
+	callback: ({ req, admin }: { req: Request; admin: AdminApp }) => Promise<FirebaseCallbackResult>;
+	httpMethod: (typeof Methods)[number];
 };
 
 export const appCheckedRequest = ({ firebaseAdminInstance, callback, httpMethod }: AppCheckedRequest) =>
 	onRequest(
-		// ? Allows endpoint to be hit by everyone, and disables
+		// ? Allows endpoint to be hit by everyone
 		{ invoker: "public", cors: GLOBALS.ALLOWED_DOMAINS },
 		async (request, response) => {
 			// ? App check logic
@@ -79,7 +76,7 @@ export const appCheckedRequest = ({ firebaseAdminInstance, callback, httpMethod 
 
 			// ? 4. Execute main logic here
 			try {
-				const res = await callback(request);
+				const res = await callback({ req: request, admin: firebaseAdminInstance });
 				response.status(res.code).send(res.message);
 			} catch (error) {
 				response

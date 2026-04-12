@@ -2,6 +2,7 @@
 	"name": "functions",
 	"scripts": {
 		"build": "bun x tsc",
+		"dev": "bun run start",
 		"build:watch": "bun x tsc --watch",
 		"serve": "npm run build && firebase emulators:start --only functions",
 		"shell": "npm run build && firebase functions:shell",

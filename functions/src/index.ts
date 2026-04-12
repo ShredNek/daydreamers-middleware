@@ -1,14 +1,14 @@
-import admin from "firebase-admin";
+import * as firebaseAdminInstance from "firebase-admin";
 import { setGlobalOptions } from "firebase-functions/options";
 import { appCheckedRequest } from "./firebase-helpers/appCheckedRequest";
 import { controller } from "./modules/controller";
 
 // ? Initialise app
-if (!admin.apps.length) {
-	admin.initializeApp();
+if (!firebaseAdminInstance.apps.length) {
+	firebaseAdminInstance.initializeApp();
 }
 
-export type AdminApp = typeof admin;
+export type AdminApp = typeof firebaseAdminInstance;
 
 // ? Set locale
 setGlobalOptions({ region: "australia-southeast1" });
@@ -18,7 +18,19 @@ setGlobalOptions({ region: "australia-southeast1" });
 // ? ? ? ?
 
 export const enquiry = appCheckedRequest({
-	firebaseAdminInstance: admin,
+	firebaseAdminInstance,
 	httpMethod: "POST",
-	callback: async (req) => controller.postEnquiry(req),
+	callback: controller.postEnquiry,
+});
+
+export const addMailingListUser = appCheckedRequest({
+	firebaseAdminInstance,
+	httpMethod: "PATCH",
+	callback: controller.patchMailingListUser,
+});
+
+export const deleteMailingListEmail = appCheckedRequest({
+	firebaseAdminInstance,
+	httpMethod: "DELETE",
+	callback: controller.deleteMailingListEmail,
 });
