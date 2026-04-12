@@ -6,11 +6,9 @@ import type Methods from "methods";
 import type { AdminApp } from "../index";
 import GLOBALS from "../modules/globals";
 
-const clientProjectIdInstance = process.env.CLIENT_PROJECT_ID;
-
 const verifyAppCheck = async (token: string, firebaseAdminInstance: AdminApp) => {
 	try {
-		const projectId = clientProjectIdInstance;
+		const projectId = process.env.CLIENT_PROJECT_ID;
 
 		if (!projectId) {
 			throw new Error("CLIENT_PROJECT_ID not set");
