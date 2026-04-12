@@ -24,6 +24,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: Create .env file
         run: |
+          cd ./functions 
           echo "${{ secrets.ENV_FILE }}" > .env
       - name: Build
         run: | 
@@ -31,13 +32,13 @@ jobs:
           cd ./functions 
           bun i
           bun run build
-      - name: Deploy to Firebase
+      - name: Deploy built project to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only functions -P dd-middleware
+          args: deploy --only functions -P ddmerch-middlewear
         env:
           GCP_SA_KEY: ${{ secrets.PROD_SERVICE_ACCOUNT_JSON }}
-          PROJECT_ID: dd-middleware
+          PROJECT_ID: ddmerch-middlewear
   
   deploy-test-backend:
     needs: lint-check
@@ -48,6 +49,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: Create .env file
         run: |
+          cd ./functions 
           echo "${{ secrets.ENV_FILE }}" > .env
       - name: Build
         run: | 
@@ -57,7 +59,7 @@ jobs:
           bun run build
       - name: Install Firebase CLI
         run: bun add -g firebase-tools
-      - name: Deploy to Firebase
+      - name: Deploy built project to Firebase
         run: |
           export GOOGLE_APPLICATION_CREDENTIALS=gcp_key.json
           echo '${{ secrets.TEST_SERVICE_ACCOUNT_JSON }}' > gcp_key.json
