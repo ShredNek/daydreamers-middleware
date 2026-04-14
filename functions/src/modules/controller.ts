@@ -14,7 +14,7 @@ type ControllerParams = {
 };
 
 export const controller = {
-	postEnquiry: async ({ req }: ControllerParams): Promise<FirebaseCallbackResult> => {
+	postEnquiryHandler: async ({ req }: ControllerParams): Promise<FirebaseCallbackResult> => {
 		try {
 			const { EMAIL_USER, EMAIL_PASS } = process.env;
 
@@ -111,7 +111,7 @@ export const controller = {
 		}
 	},
 
-	patchMailingListUser: async ({ req }: ControllerParams): Promise<FirebaseCallbackResult> => {
+	addToMailingListHandler: async ({ req }: ControllerParams): Promise<FirebaseCallbackResult> => {
 		try {
 			const { email, fullName } = PatchMailingListUserBody.parse(req.body);
 
@@ -162,7 +162,7 @@ export const controller = {
 		}
 	},
 
-	deleteMailingListEmail: async ({ req }: ControllerParams): Promise<FirebaseCallbackResult> => {
+	deleteFromMailingListHandler: async ({ req }: ControllerParams): Promise<FirebaseCallbackResult> => {
 		try {
 			const { email } = RemoveMailingListUserBody.parse(req.body);
 

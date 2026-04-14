@@ -17,20 +17,20 @@ setGlobalOptions({ region: "australia-southeast1" });
 // ? MAIN ?
 // ? ? ? ?
 
-export const enquiry = appCheckedRequest({
+export const postEnquiry = appCheckedRequest({
 	firebaseAdminInstance,
 	httpMethod: "POST",
-	callback: controller.postEnquiry,
+	callback: controller.postEnquiryHandler,
 });
 
-export const addMailingListUser = appCheckedRequest({
+export const addToMailingList = appCheckedRequest({
 	firebaseAdminInstance,
-	httpMethod: "PATCH",
-	callback: controller.patchMailingListUser,
+	httpMethod: "POST",
+	callback: controller.addToMailingListHandler,
 });
 
-export const deleteMailingListEmail = appCheckedRequest({
+export const deleteFromMailingList = appCheckedRequest({
 	firebaseAdminInstance,
 	httpMethod: "DELETE",
-	callback: controller.deleteMailingListEmail,
+	callback: controller.deleteFromMailingListHandler,
 });
