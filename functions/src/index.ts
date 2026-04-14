@@ -1,6 +1,6 @@
 import * as firebaseAdminInstance from "firebase-admin";
 import { setGlobalOptions } from "firebase-functions/options";
-import { appCheckedRequest } from "./firebase-helpers/appCheckedRequest";
+import { appCheckedRequest } from "./helpers/appCheckedRequest";
 import { controller } from "./modules/controller";
 
 // ? Initialise app
